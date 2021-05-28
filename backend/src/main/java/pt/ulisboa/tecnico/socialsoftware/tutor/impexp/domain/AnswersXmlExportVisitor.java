@@ -107,13 +107,34 @@ public class AnswersXmlExportVisitor implements Visitor {
     }
 
     @Override
-    public void visitAnswerDetails(MultipleChoiceAnswer answer) {
+    public void visitAnswerDetails(MultipleChoiceAnswer answer) {   
         this.currentQuestionAnswer.setAttribute("type", Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION);
-        if (answer.getOption() != null) {
-            Element optionElement = new Element("option");
-            optionElement.setAttribute(QUESTION_KEY, String.valueOf(answer.getQuestionAnswer().getQuestion().getKey()));
-            optionElement.setAttribute(SEQUENCE, String.valueOf(answer.getOption().getSequence()));
-            this.currentElement.addContent(optionElement);
+        if (answer.isAnswered()) {
+            Element optionsElement = new Element("options");
+            optionsElement.setAttribute(QUESTION_KEY, String.valueOf(answer.getQuestionAnswer().getQuestion().getKey()));
+            for(MultipleChoiceAnswerOption option:answer.getAnsweredOptions()){
+                Element optionElement = new Element("option");
+                optionElement.setAttribute(SEQUENCE, String.valueOf(option.getOption().getSequence()));
+                optionElement.setAttribute("order", String.valueOf(option.getAssignedOrder()));
+                optionsElement.addContent(optionElement);
+            }   
+            this.currentElement.addContent(optionsElement);
+        }
+    }
+
+    @Override
+    public void visitAnswerDetails(CombinationItemAnswer answer) {   
+        this.currentQuestionAnswer.setAttribute("type", Question.QuestionTypes.COMBINATION_ITEM_QUESTION);
+        if (answer.isAnswered()) {
+            Element optionsElement = new Element("options");
+            optionsElement.setAttribute(QUESTION_KEY, String.valueOf(answer.getQuestionAnswer().getQuestion().getKey()));
+            for(CombinationItemAnswerOption option:answer.getLinks()){
+                Element optionElement = new Element("option");
+                optionElement.setAttribute(SEQUENCE, String.valueOf(option.getCombOption().getSequence()));
+                optionElement.setAttribute("links", String.valueOf(option.getCombOption().getLink()));
+                optionsElement.addContent(optionElement);
+            }   
+            this.currentElement.addContent(optionsElement);
         }
     }
 
@@ -150,6 +171,16 @@ public class AnswersXmlExportVisitor implements Visitor {
             }
 
             this.currentElement.addContent(spotContainerElement);
+        }
+    }
+
+    @Override
+    public void visitAnswerDetails(OpenEndedAnswer answer) {
+        this.currentQuestionAnswer.setAttribute("type", Question.QuestionTypes.OPEN_ENDED_QUESTION);
+        if (answer.isAnswered()) {
+            Element answerElement = new Element("answer");
+            answerElement.setAttribute("answer", String.valueOf(answer.getAnswer()));
+            this.currentElement.addContent(answerElement);
         }
     }
 }

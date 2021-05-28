@@ -244,8 +244,15 @@ public class QuestionsXmlImport {
             Integer optionSequence = Integer.valueOf(optionElement.getAttributeValue(SEQUENCE));
             String optionContent = optionElement.getAttributeValue(CONTENT);
             boolean left = Boolean.parseBoolean(optionElement.getAttributeValue("left"));
-            Integer link = Integer.valueOf(optionElement.getAttributeValue("link"));
-
+            String linkString = optionElement.getAttributeValue("link");
+            String replace = linkString.replace("[", "" );
+            String replace1 = replace.replace("]", "");
+            String[] arrOfStr = replace1.split(",");
+            List<Integer> link = new ArrayList<Integer>();
+            for(String a : arrOfStr){
+                String b = a.replace(" ", "");
+                link.add(Integer.parseInt(b));
+            }
             CombOptionDto combOptionDto = new CombOptionDto();
             combOptionDto.setSequence(optionSequence);
             combOptionDto.setContent(optionContent);

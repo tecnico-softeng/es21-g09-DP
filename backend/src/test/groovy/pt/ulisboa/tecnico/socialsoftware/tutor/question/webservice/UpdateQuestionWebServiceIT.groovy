@@ -168,7 +168,7 @@ class UpdateQuestionWebServiceIT extends QuestionWebServiceIT {
 
         def newCombOptionDto = new CombOptionDto()
         newCombOptionDto.setContent(OPTION_1_CONTENT)
-        newCombOptionDto.setLink(2)
+        newCombOptionDto.link.add(2)
         newCombOptionDto.setLeft(false)
         def newCombOptions = new ArrayList<CombOptionDto>()
         newCombOptions.add(newCombOptionDto)
@@ -191,7 +191,7 @@ class UpdateQuestionWebServiceIT extends QuestionWebServiceIT {
         updatedQuestionDto.status == newQuestionDto.getStatus()
         updatedQuestionDto.title == newQuestionDto.getTitle()
         updatedQuestionDto.content == newQuestionDto.getContent()
-        updatedQuestionDto.questionDetailsDto.options.get(0).link == newCombOptionDto.getLink()
+        updatedQuestionDto.questionDetailsDto.options.get(0).link.get(0) == newCombOptionDto.getLink().get(0)
         updatedQuestionDto.questionDetailsDto.options.get(0).content == newCombOptionDto.getContent()
         updatedQuestionDto.questionDetailsDto.options.get(0).left == newCombOptionDto.isLeft()
     }
@@ -209,7 +209,7 @@ class UpdateQuestionWebServiceIT extends QuestionWebServiceIT {
 
         def newCombOptionDto = new CombOptionDto()
         newCombOptionDto.setContent(OPTION_1_CONTENT)
-        newCombOptionDto.setLink(2)
+        newCombOptionDto.link.add(2)
         newCombOptionDto.setLeft(false)
         def newCombOptions = new ArrayList<CombOptionDto>()
         newCombOptions.add(newCombOptionDto)

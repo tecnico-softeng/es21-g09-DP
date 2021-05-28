@@ -7,7 +7,7 @@ export default class OpenEndedQuestionDetails extends QuestionDetails {
     constructor(jsonObj?: OpenEndedQuestionDetails) {
         super(QuestionTypes.OpenEnded);
         if (jsonObj) {
-            this.answer = jsonObj.answer;
+            this.answer = '';
         }
     }
 

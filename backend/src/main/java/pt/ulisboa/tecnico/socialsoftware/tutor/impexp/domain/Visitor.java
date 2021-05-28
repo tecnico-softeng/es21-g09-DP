@@ -1,6 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.*;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.OpenEndedAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.CodeFillInAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswer;
@@ -49,11 +50,13 @@ public interface Visitor {
 
     default void visitQuestionDetails(MultipleChoiceQuestion question) {}
 
-    default void visitQuestionDetails(CombinationItemQuestion question) {}
-
     default void visitAnswerDetails(CodeFillInAnswer answer){}
 
     default void visitQuestionDetails(CodeFillInQuestion question) {}
+
+    default void visitAnswerDetails(CombinationItemAnswer answer){}
+
+    default void visitQuestionDetails(CombinationItemQuestion question) {}
 
     default void visitFillInSpot(CodeFillInSpot spot) {}
 
@@ -70,4 +73,6 @@ public interface Visitor {
     default void visitCodeOrderSlot(CodeOrderSlot codeOrderSlot) {}
 
     default void visitQuestionDetails(OpenEndedQuestion openEndedQuestion) {}
+
+    default void visitAnswerDetails(OpenEndedAnswer answer) {}
 }

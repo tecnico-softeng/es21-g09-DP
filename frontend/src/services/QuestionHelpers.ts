@@ -21,6 +21,10 @@ import CodeOrderAnswerDetails from '@/models/management/questions/CodeOrderAnswe
 import CodeOrderStatementQuestionDetails from '@/models/statement/questions/CodeOrderStatementQuestionDetails';
 import CodeOrderStatementAnswerDetails from '@/models/statement/questions/CodeOrderStatementAnswerDetails';
 import CodeOrderStatementCorrectAnswerDetails from '@/models/statement/questions/CodeOrderStatementCorrectAnswerDetails';
+import CombinationItemAnswerDetails from '@/models/management/questions/CombinationItemAnswerDetails';
+import CombinationItemStatementQuestionDetails from '@/models/statement/questions/CombinationItemStatementQuestionDetails';
+import CombinationItemStatementAnswerDetails from '@/models/statement/questions/CombinationItemStatementAnswerDetails';
+import CombinationItemStatementCorrectAnswerDetails from '@/models/statement/questions/CombinationItemStatementCorrectAnswerDetails';
 
 
 export enum QuestionTypes {
@@ -78,20 +82,19 @@ class CombinationItemQuestionFactory extends QuestionFactory {
     return new CombinationItemQuestionDetails(details);
   }
   
-  //TODO
   createAnswerDetails(details: any): AnswerDetails {
-    return new MultipleChoiceAnswerDetails(details);
+    return new CombinationItemAnswerDetails(details);
   }
   createStatementQuestionDetails(details: any): StatementQuestionDetails {
-    return new MultipleChoiceStatementQuestionDetails(details);
+    return new CombinationItemStatementQuestionDetails(details);
   }
   createStatementAnswerDetails(details: any): StatementAnswerDetails {
-    return new MultipleChoiceStatementAnswerDetails(details);
+    return new CombinationItemStatementAnswerDetails(details);
   }
   createStatementCorrectAnswerDetails(
     details: any
   ): StatementCorrectAnswerDetails {
-    return new MultipleChoiceStatementCorrectAnswerDetails(details);
+    return new CombinationItemStatementCorrectAnswerDetails(details);
   }
 }
 

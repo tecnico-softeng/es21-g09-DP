@@ -15,6 +15,7 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.Quiz
 import pt.ulisboa.tecnico.socialsoftware.tutor.quiz.domain.QuizQuestion
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.MultipleChoiceStatementAnswerDetailsDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementAnswerDto
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.OptionStatementAnswerDetailsDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementQuizDto
 import pt.ulisboa.tecnico.socialsoftware.tutor.user.domain.User
 import pt.ulisboa.tecnico.socialsoftware.tutor.auth.domain.AuthUser
@@ -108,7 +109,7 @@ class ConcludeQuizTest extends SpockTest {
         correctAnswers.size() == 1
         def correctAnswerDto = correctAnswers.get(0)
         correctAnswerDto.getSequence() == 0
-        correctAnswerDto.getCorrectAnswerDetails().getCorrectOptionId() == optionOk.getId()
+        correctAnswerDto.getCorrectAnswerDetails().getCorrectOptions().get(1).getOptionId() == optionOk.getId()
     }
 
     def 'conclude quiz IN_CLASS without answering, before conclusionDate'() {
@@ -154,7 +155,7 @@ class ConcludeQuizTest extends SpockTest {
         statementQuizDto.quizAnswerId = quizAnswer.getId()
         def statementAnswerDto = new StatementAnswerDto()
         def multipleChoiceAnswerDto = new MultipleChoiceStatementAnswerDetailsDto()
-        multipleChoiceAnswerDto.setOptionId(optionOk.getId())
+        multipleChoiceAnswerDto.addAnsweredOptions(new OptionStatementAnswerDetailsDto(optionOk.getId(),null))
         statementAnswerDto.setAnswerDetails(multipleChoiceAnswerDto)
         statementAnswerDto.setSequence(0)
         statementAnswerDto.setTimeTaken(100)
@@ -172,13 +173,13 @@ class ConcludeQuizTest extends SpockTest {
         quizAnswer.getQuestionAnswers().contains(questionAnswer)
         questionAnswer.getQuizQuestion() == quizQuestion
         quizQuestion.getQuestionAnswers().contains(questionAnswer)
-        ((MultipleChoiceAnswer) questionAnswer.getAnswerDetails()).getOption() == optionOk
-        optionOk.getQuestionAnswers().contains(questionAnswer.getAnswerDetails())
+        ((MultipleChoiceAnswer) questionAnswer.getAnswerDetails()).getAnsweredOptions().stream().anyMatch(x->x.getOption()==optionOk)
+        optionOk.getAnswerOptions().stream().anyMatch(x->x.getMultipleChoiceAnswer()==questionAnswer.getAnswerDetails())
         and: 'the return value is OK'
         correctAnswers.size() == 1
         def correctAnswerDto = correctAnswers.get(0)
         correctAnswerDto.getSequence() == 0
-        correctAnswerDto.getCorrectAnswerDetails().getCorrectOptionId() == optionOk.getId()
+        correctAnswerDto.getCorrectAnswerDetails().getCorrectOptions().size() == 2
     }
 
     def 'conclude quiz without answering, before availableDate'() {
@@ -243,7 +244,7 @@ class ConcludeQuizTest extends SpockTest {
         statementQuizDto.quizAnswerId = quizAnswer.getId()
         def statementAnswerDto = new StatementAnswerDto()
         def multipleChoiceAnswerDto = new MultipleChoiceStatementAnswerDetailsDto()
-        multipleChoiceAnswerDto.setOptionId(optionOk.getId())
+        multipleChoiceAnswerDto.addAnsweredOptions(new OptionStatementAnswerDetailsDto(optionOk.getId(),null))
         statementAnswerDto.setAnswerDetails(multipleChoiceAnswerDto)
         statementAnswerDto.setSequence(0)
         statementAnswerDto.setTimeTaken(100)

@@ -5,13 +5,13 @@
       <span
         v-if="option.left"
         v-html="
-          convertMarkDown('Option  ID:' + option.id + '| Link:' + option.link + '| Content:' + option.content)
+          convertMarkDown('Option | Link:' + option.link + '| Content:' + option.content)
         "
       />
       <span
         v-else
         v-html="
-          convertMarkDown('Answer  ID:' + option.id + '| Link:' + option.link + '| Content:' + option.content)
+          convertMarkDown('Answer | Link:' + option.link + '| Content:' + option.content)
         "
       />
     </li>

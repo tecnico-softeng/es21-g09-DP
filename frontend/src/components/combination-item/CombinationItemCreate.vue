@@ -1,39 +1,70 @@
 <template>
   <div class="combination-item-options">
-    <v-row>
-      <v-col cols="1" offset="10"> Link </v-col>
-    </v-row>
+
 
     <v-row
       v-for="(combOption, index) in sQuestionDetails.options"
       :key="combOption.localId"
       data-cy="questionCombOptions"
     >
-      <v-col cols="10">
+      <v-col cols="1">
+        <div id="index">
+            {{  "\n" }}
+            {{  index }}
+        </div>
+      </v-col>
+      <v-col cols="6">
         <v-textarea
           v-model="combOption.content"
-          :label="`Option ${index + 1}`"
-          :data-cy="`Option${index + 1}`"
+          :label="`Option ${index}`"
+          :data-cy="`Option${index}`"
           rows="1"
           auto-grow
         ></v-textarea>
       </v-col>
       <v-col cols="1">
-        <v-textarea
-          v-model.number="combOption.link"
-          :label="`Link`"
-          :data-cy="`CombOptionLinkofOption${index + 1}`"
-          rows="1"
-          auto-grow
-        ></v-textarea>
+        <div id="link">
+            {{  combOption.link }}
+        </div>
+      </v-col>
+      <v-col cols="1">
+        <select v-model="selected" multiple
+          :data-cy="`Select${index}`">
+          <option>0</option>
+          <option>1</option>
+          <option>2</option>
+          <option>3</option>
+          <option>4</option>
+          <option>5</option>
+          <option>6</option>
+          <option>7</option>
+          <option>8</option>
+          <option>9</option>
+        </select>
+        <br>
+      </v-col>
+      <v-col>
+        <v-tooltip bottom>
+          <template v-slot:activator="{ on }">
+            <v-icon
+              :data-cy="`AddLink${index}`"
+              small
+              class="ma-1 action-button"
+              v-on="on"
+              @click="addLink(index, +selected)"
+              color="green"
+              >add</v-icon
+            >
+          </template>
+          <span>Add Link</span>
+        </v-tooltip>
       </v-col>
       <v-col cols="1">
         <v-checkbox
           v-model="combOption.left"
           :label="`Left`"
-          :data-cy="`CombOptionLeftofOption${index + 1}`"
+          :data-cy="`CombOptionLeftofOption${index}`"
           rows="1"
-          auto-grow
         ></v-checkbox>
       </v-col>
       <v-col v-if="sQuestionDetails.options.length > 2">
@@ -98,6 +129,17 @@ export default class CombinationItemCreate extends Vue {
   }
   removeCombOption(index: number) {
     this.sQuestionDetails.options.splice(index, 1);
+  }
+
+  addLink(index : number, link : number){
+    if(this.sQuestionDetails.options.length - 1 >= link){
+      if(this.sQuestionDetails.options[index].left != this.sQuestionDetails.options[link].left){
+        if(!this.sQuestionDetails.options[index].link.includes(link)){
+          this.sQuestionDetails.options[index].link.push(link);
+          this.sQuestionDetails.options[link].link.push(index);
+        }
+      }
+    }
   }
 
 }

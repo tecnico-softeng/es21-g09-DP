@@ -1,5 +1,6 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.CombinationItemAnswerOption;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswer;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
@@ -11,6 +12,9 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.List;
+import java.util.ArrayList;
+
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.INVALID_CONTENT_FOR_OPTION;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.INVALID_SEQUENCE_FOR_OPTION;
@@ -18,9 +22,9 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.IN
 @Entity
 @Table(name = "combOption")
 public class CombOption implements DomainEntity {
-
-    @Column(columnDefinition = "integer Default -1", nullable = false)
-    private Integer link;
+    /*As ligacoes vao ser definidas pelos ID's das opcoes que estao ligadas*/
+    @ElementCollection(fetch=FetchType.EAGER)
+    private List<Integer> link = new ArrayList<Integer>();
 
     @Column(columnDefinition = "boolean default false", nullable = false)
     private Boolean leaft;
@@ -39,6 +43,9 @@ public class CombOption implements DomainEntity {
     @JoinColumn(name = "question_details_id")
     private CombinationItemQuestion questionDetails;
 
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "combOption", fetch = FetchType.LAZY, orphanRemoval = true)
+    private final Set<CombinationItemAnswerOption> answerLinks = new HashSet<>();
+
     public CombOption() {
     }
 
@@ -49,6 +56,13 @@ public class CombOption implements DomainEntity {
         setLeft(combOption.isLeft());
     }
 
+    public Set<CombinationItemAnswerOption> getAnswerOptions() {
+        return answerLinks;
+    }
+
+    public void addAnswerOptions(CombinationItemAnswerOption questionAnswer) {
+        answerLinks.add(questionAnswer);
+    }
     public Integer getId() {
         return id;
     }
@@ -87,12 +101,24 @@ public class CombOption implements DomainEntity {
         this.content = content;
     }
 
-    public Integer getLink() {
+    public List<Integer> getLink() {
         return link;
     }
 
-    public void setLink(Integer link) {
+    public void setLink(List<Integer> link) {
         this.link = link;
+    }
+
+    public void addToLink(Integer _link){
+        link.add(_link);
+    }
+
+    public void removeFromLink(Integer _link){
+        link.remove(_link);
+    }
+
+    public boolean isInLink(Integer _link){
+        return link.contains(_link);
     }
 
     public CombinationItemQuestion getQuestionDetails() {

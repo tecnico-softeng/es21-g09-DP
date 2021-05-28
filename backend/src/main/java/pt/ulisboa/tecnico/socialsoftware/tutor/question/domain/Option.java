@@ -1,8 +1,7 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.domain;
 
-import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswer;
+import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswerOption;
 import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorExceptionDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.DomainEntity;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.dto.OptionDto;
@@ -13,8 +12,6 @@ import java.util.Set;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.INVALID_CONTENT_FOR_OPTION;
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.INVALID_SEQUENCE_FOR_OPTION;
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.WRONG_OPTION_WITH_ORDER;
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.CORRECT_OPTION_WITHOUT_ORDER;
 
 @Entity
 @Table(name = "options")
@@ -41,7 +38,7 @@ public class Option implements DomainEntity {
     private MultipleChoiceQuestion questionDetails;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "option", fetch = FetchType.LAZY, orphanRemoval = true)
-    private final Set<MultipleChoiceAnswer> questionAnswers = new HashSet<>();
+    private final Set<MultipleChoiceAnswerOption> answerOptions = new HashSet<>();
 
     public Option() {
     }
@@ -109,12 +106,12 @@ public class Option implements DomainEntity {
         question.addOption(this);
     }
 
-    public Set<MultipleChoiceAnswer> getQuestionAnswers() {
-        return questionAnswers;
+    public Set<MultipleChoiceAnswerOption> getAnswerOptions() {
+        return answerOptions;
     }
 
-    public void addQuestionAnswer(MultipleChoiceAnswer questionAnswer) {
-        questionAnswers.add(questionAnswer);
+    public void addAnswerOptions(MultipleChoiceAnswerOption questionAnswer) {
+        answerOptions.add(questionAnswer);
     }
 
     @Override
@@ -126,12 +123,12 @@ public class Option implements DomainEntity {
                 ", order=" + order +
                 ", content='" + content + '\'' +
                 ", question=" + questionDetails.getId() +
-                ", questionAnswers=" + questionAnswers +
+                ", answeredOptions=" + answerOptions +
                 '}';
     }
 
     public void remove() {
         this.questionDetails = null;
-        this.questionAnswers.clear();
+        this.answerOptions.clear();
     }
 }

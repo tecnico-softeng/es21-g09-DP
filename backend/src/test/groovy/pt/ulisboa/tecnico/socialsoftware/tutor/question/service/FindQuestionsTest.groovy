@@ -84,7 +84,7 @@ class FindQuestionsTest extends SpockTest {
         quizAnswerRepository.save(quizAnswer)
 
         def questionAnswer = new QuestionAnswer()
-        def answerDetails = new MultipleChoiceAnswer(questionAnswer, optionOK)
+        def answerDetails = new MultipleChoiceAnswer(questionAnswer, optionOK,null)
         questionAnswer.setAnswerDetails(answerDetails)
         questionAnswer.setQuizAnswer(quizAnswer)
         questionAnswer.setQuizQuestion(quizQuestion)
@@ -92,7 +92,7 @@ class FindQuestionsTest extends SpockTest {
         answerDetailsRepository.save(answerDetails)
 
         questionAnswer = new QuestionAnswer()
-        answerDetails = new MultipleChoiceAnswer(questionAnswer, optionKO)
+        answerDetails = new MultipleChoiceAnswer(questionAnswer, optionKO,null)
         questionAnswer.setAnswerDetails(answerDetails)
         questionAnswer.setQuizAnswer(quizAnswer)
         questionAnswer.setQuizQuestion(quizQuestion)

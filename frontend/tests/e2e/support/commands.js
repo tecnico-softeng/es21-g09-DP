@@ -537,3 +537,89 @@ Cypress.Commands.add('deleteQuestion', (questionTitle) => {
     .find('[data-cy="deleteQuestionButton"]')
     .click();
 });
+
+Cypress.Commands.add(
+  'createMultipleChoiceQuestion',
+  (title, question, correct1, option2, option3, correct2) => {
+    cy.get('[data-cy="managementMenuButton"]').click();
+    cy.get('[data-cy="questionsTeacherMenuButton"]').click();
+
+    //creates question1
+    cy.get('[data-cy="newQuestionButton"]').click();
+    cy.get('[data-cy="questionTitleTextArea"]').type(title);
+    cy.get('[data-cy="questionQuestionTextArea"]').type(question);
+    cy.get('[data-cy="Option1"]').type(correct1);
+    cy.get('[data-cy="Option2"]').type(option2);
+    cy.get('[data-cy="Option3"]').type(option3);
+    cy.get('[data-cy="Option4"]').type(correct2);
+    cy.get('[data-cy="Checkbox1"]').click({ force: true });
+    cy.get('[data-cy="Checkbox4"]').click({ force: true });
+    cy.get('[data-cy="saveQuestionButton"]').click();
+  }
+);
+
+Cypress.Commands.add(
+  'createOrderedMultipleChoiceQuestion',
+  (title, question, correct1, correct2, option3, option4) => {
+    cy.get('[data-cy="managementMenuButton"]').click();
+    cy.get('[data-cy="questionsTeacherMenuButton"]').click();
+
+    //creates question1
+    cy.get('[data-cy="newQuestionButton"]').click();
+    cy.get('[data-cy="Ordered"]').check({ force: true })
+    cy.get('[data-cy="questionTitleTextArea"]').type(title);
+    cy.get('[data-cy="questionQuestionTextArea"]').type(question);
+    cy.get('[data-cy="Option1"]').type(correct1);
+    cy.get('[data-cy="Option2"]').type(correct2);
+    cy.get('[data-cy="Option3"]').type(option3);
+    cy.get('[data-cy="Option4"]').type(option4);
+    cy.get('[data-cy="Checkbox1"]').click({ force: true });
+    cy.get('[data-cy="Checkbox2"]').click({ force: true });
+    cy.get('[data-cy="saveQuestionButton"]').click();
+  }
+);
+
+Cypress.Commands.add(
+  'createQuizzWith3Questions',
+  (quizTitle, questionTitle, questionTitle2, questionTitle3) => {
+    cy.get('[data-cy="managementMenuButton"]').click();
+    cy.get('[data-cy="quizzesTeacherMenuButton"]').click();
+
+    cy.get('[data-cy="newQuizButton"]').click();
+    cy.get('[data-cy="quizTitleTextArea"]').type(quizTitle);
+
+    cy.get('#availableDateInput-input').click();
+    cy.get(
+      '.datetimepicker > .datepicker > .datepicker-buttons-container > .datepicker-button > .datepicker-button-content'
+    ).click();
+
+    cy.contains(questionTitle)
+      .parent()
+      .should('have.length', 1)
+      .parent()
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="addToQuizButton"]')
+      .click();
+
+    cy.contains(questionTitle2)
+      .parent()
+      .should('have.length', 1)
+      .parent()
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="addToQuizButton"]')
+      .click();
+      
+    cy.contains(questionTitle3)
+      .parent()
+      .should('have.length', 1)
+      .parent()
+      .children()
+      .should('have.length', 5)
+      .find('[data-cy="addToQuizButton"]')
+      .click();
+
+    cy.get('[data-cy="saveQuizButton"]').click();
+  }
+);

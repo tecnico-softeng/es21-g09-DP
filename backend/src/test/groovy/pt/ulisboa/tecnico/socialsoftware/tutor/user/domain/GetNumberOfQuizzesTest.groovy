@@ -48,7 +48,7 @@ class GetNumberOfQuizzesTest extends SpockTest {
         Option option = new Option()
         option.setSequence(1)
         option.setCorrect(true)
-        question.getQuestionDetails().addOption(option)
+        option.setQuestionDetails(questionDetails)
 
         QuestionDto questionDto = new QuestionDto(question)
         questionDto.setKey(1)
@@ -68,7 +68,7 @@ class GetNumberOfQuizzesTest extends SpockTest {
         quizAnswer.setCompleted(true)
 
         def questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 1, 1)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
     }
 
     @Unroll

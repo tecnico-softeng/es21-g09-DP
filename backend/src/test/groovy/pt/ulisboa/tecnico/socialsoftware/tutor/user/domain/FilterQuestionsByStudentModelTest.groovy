@@ -65,7 +65,7 @@ class FilterQuestionsByStudentModelTest extends SpockTest {
         option.setCorrect(true)
         option.setSequence(0)
         def questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionOne, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         when:
         def result = user.filterQuestionsByStudentModel(5, availableQuestions)
@@ -84,16 +84,16 @@ class FilterQuestionsByStudentModelTest extends SpockTest {
         option.setCorrect(true)
         option.setSequence(0)
         def questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionThree, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionFour, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionFive, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionSix, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         when:
         def result = user.filterQuestionsByStudentModel(5, availableQuestions)
@@ -113,19 +113,19 @@ class FilterQuestionsByStudentModelTest extends SpockTest {
         option.setCorrect(true)
         option.setSequence(0)
         def questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionTwo, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionThree, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionFour, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionFive, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
         questionAnswer = new QuestionAnswer(quizAnswer, quizQuestionSix, 10, 0)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
 
 
         when:

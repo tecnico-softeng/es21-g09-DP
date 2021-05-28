@@ -92,7 +92,7 @@ class DiscussionFixtureSpockTest extends SpockTest {
         questionanswer.setQuizAnswer(quizAnswer)
         questionanswer.setQuizQuestion(quizquestion)
 
-        def answerDetails = new MultipleChoiceAnswer(questionanswer, optionRepository.findAll().get(0));
+        def answerDetails = new MultipleChoiceAnswer(questionanswer, optionRepository.findAll().get(0), null);
         questionanswer.setAnswerDetails(answerDetails);
 
         answerDetailsRepository.save(answerDetails)
@@ -106,7 +106,7 @@ class DiscussionFixtureSpockTest extends SpockTest {
         questionanswer2.setQuizAnswer(quizAnswer)
         questionanswer2.setQuizQuestion(quizquestion)
 
-        def answerDetails2 = new MultipleChoiceAnswer(questionanswer, optionRepository.findAll().get(0));
+        def answerDetails2 = new MultipleChoiceAnswer(questionanswer, optionRepository.findAll().get(0),null);
         questionanswer2.setAnswerDetails(answerDetails2);
 
         answerDetailsRepository.save(answerDetails2)

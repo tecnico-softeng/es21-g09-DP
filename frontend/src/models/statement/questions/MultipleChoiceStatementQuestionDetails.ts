@@ -4,6 +4,7 @@ import StatementOption from '@/models/statement/StatementOption';
 import { _ } from 'vue-underscore';
 
 export default class MultipleChoiceStatementQuestionDetails extends StatementQuestionDetails {
+  ordered!: boolean;
   options: StatementOption[] = [];
 
   constructor(jsonObj?: MultipleChoiceStatementQuestionDetails) {
@@ -16,6 +17,7 @@ export default class MultipleChoiceStatementQuestionDetails extends StatementQue
           )
         );
       }
+      this.ordered = jsonObj.ordered;
     }
   }
 }

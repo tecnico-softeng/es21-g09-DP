@@ -31,7 +31,7 @@
       </div>
     </div>
     <component
-      :is="question.questionDetails.type"
+      :is="questionComponent"
       :questionDetails="question.questionDetails"
       :answerDetails="answer.answerDetails"
       :correctAnswerDetails="correctAnswer.correctAnswerDetails"
@@ -49,13 +49,17 @@ import StatementCorrectAnswer from '@/models/statement/StatementCorrectAnswer';
 import Image from '@/models/management/Image';
 import MultipleChoiceAnswer from '@/components/multiple-choice/MultipleChoiceAnswer.vue';
 import CodeFillInAnswerResult from '@/components/code-fill-in/CodeFillInAnswerResult.vue';
+import MultipleChoiceAnswerOrderResult from '@/components/multiple-choice/MultipleChoiceAnswerOrderResult.vue';
+import MultipleChoiceStatementQuestionDetails from '@/models/statement/questions/MultipleChoiceStatementQuestionDetails';
 import CodeOrderAnswerResult from '@/components/code-order/CodeOrderAnswerResult.vue';
-
+//import CombinationItemAnswerResult from '@/components/combination-item/CombinationItemAnswerResult.vue';
 @Component({
   components: {
+    multiple_choice_order: MultipleChoiceAnswerOrderResult,
     multiple_choice: MultipleChoiceAnswer,
     code_fill_in: CodeFillInAnswerResult,
     code_order: CodeOrderAnswerResult,
+    //combination_item: CombinationItemAnswerResult,
   },
 })
 export default class ResultComponent extends Vue {
@@ -74,6 +78,14 @@ export default class ResultComponent extends Vue {
   @Emit()
   decreaseOrder() {
     return 1;
+  }
+
+  get questionComponent(){
+    return (this.question && 
+      this.question.questionDetails.type=='multiple_choice' &&
+      (this.question.questionDetails as MultipleChoiceStatementQuestionDetails).ordered)
+      ? 'multiple_choice_order'
+      : this.question?.questionDetails.type
   }
 
   convertMarkDown(text: string, image: Image | null = null): string {

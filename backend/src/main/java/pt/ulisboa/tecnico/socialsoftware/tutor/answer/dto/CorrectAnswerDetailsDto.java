@@ -17,6 +17,9 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question.Q
         @JsonSubTypes.Type(value = MultipleChoiceCorrectAnswerDto.class, name = MULTIPLE_CHOICE_QUESTION),
         @JsonSubTypes.Type(value = CodeFillInCorrectAnswerDto.class, name = CODE_FILL_IN_QUESTION),
         @JsonSubTypes.Type(value = CodeOrderCorrectAnswerDto.class, name = CODE_ORDER_QUESTION),
+        @JsonSubTypes.Type(value = CombinationItemAnswerDto.class, name = COMBINATION_ITEM_QUESTION),
+        @JsonSubTypes.Type(value = OpenEndedCorrectAnswerDto.class, name = OPEN_ENDED_QUESTION),
+
 })
 public abstract class CorrectAnswerDetailsDto implements Serializable {
 

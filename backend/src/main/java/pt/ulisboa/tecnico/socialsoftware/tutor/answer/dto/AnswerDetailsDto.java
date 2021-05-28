@@ -14,7 +14,9 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question.Q
 @JsonSubTypes({
         @JsonSubTypes.Type(value = MultipleChoiceAnswerDto.class, name = MULTIPLE_CHOICE_QUESTION),
         @JsonSubTypes.Type(value = CodeFillInAnswerDto.class, name = CODE_FILL_IN_QUESTION),
-        @JsonSubTypes.Type(value = CodeOrderAnswerDto.class, name = CODE_ORDER_QUESTION)
+        @JsonSubTypes.Type(value = CodeOrderAnswerDto.class, name = CODE_ORDER_QUESTION),
+        @JsonSubTypes.Type(value = OpenEndedAnswerDto.class, name = OPEN_ENDED_QUESTION),
+        @JsonSubTypes.Type(value = CombinationItemAnswerDto.class, name = COMBINATION_ITEM_QUESTION),
 })
 public abstract class AnswerDetailsDto {
 

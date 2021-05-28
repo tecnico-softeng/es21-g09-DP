@@ -2,7 +2,7 @@ export default class CombOption {
     id: number | null = null;
     sequence!: number | null;
     content: string = '';
-    link: number = -1;
+    link: number[] = [];
     left: boolean = false;
     localId: number | undefined;
   
@@ -11,7 +11,7 @@ export default class CombOption {
         this.id = jsonObj.id;
         this.link = jsonObj.link;
         this.sequence = jsonObj.sequence;
-        this.content = jsonObj.content;
+        this.content = '';
         this.left = jsonObj.left;
       }
     }

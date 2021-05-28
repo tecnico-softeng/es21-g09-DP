@@ -3,11 +3,14 @@ package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.CombOption;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import java.io.Serializable;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
 
 public class CombOptionDto implements Serializable {
     private Integer id;
     private Integer sequence;
-    private Integer link;
+    private List<Integer> link  = new ArrayList<Integer>();
     private String content;
     private boolean left;
 
@@ -24,9 +27,9 @@ public class CombOptionDto implements Serializable {
 
     public CombOptionDto(Option option) {
         this.id = option.getId();
+        this.link = new ArrayList<Integer>();
         this.sequence = option.getSequence();
         this.content = option.getContent();
-        this.link = -1;
         this.left = false;
     }
 
@@ -50,12 +53,24 @@ public class CombOptionDto implements Serializable {
         this.sequence = sequence;
     }
 
-    public Integer getLink() {
+    public List<Integer> getLink() {
         return link;
     }
 
-    public void setLink(Integer link) {
+    public void setLink(List<Integer> link) {
         this.link = link;
+    }
+
+    public void addToLink(Integer _link){
+        this.link.add(_link);
+    }
+
+    public void isInLink(Integer _link){
+        this.link.contains(_link);
+    }
+
+    public void removeFromLink(Integer _link){
+        this.link.remove(_link);
     }
 
     public String getContent() {

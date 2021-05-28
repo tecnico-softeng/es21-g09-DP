@@ -7,11 +7,21 @@ import java.util.stream.Collectors;
 
 public class MultipleChoiceStatementQuestionDetailsDto extends StatementQuestionDetailsDto {
     private List<StatementOptionDto> options;
+    private boolean ordered;
 
     public MultipleChoiceStatementQuestionDetailsDto(MultipleChoiceQuestion question) {
+        this.ordered = question.isOrdered();
         this.options = question.getOptions().stream()
                 .map(StatementOptionDto::new)
                 .collect(Collectors.toList());
+    }
+
+    public boolean isOrdered(){
+        return this.ordered;
+    }
+
+    public void setOrdered(boolean ordered){
+        this.ordered = ordered;
     }
 
     public List<StatementOptionDto> getOptions() {

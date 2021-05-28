@@ -85,7 +85,8 @@ class QuestionWebServiceIT extends SpockTest {
         comboItemQuestionDto.setStatus(Question.Status.AVAILABLE.name())
         def combDto1 = new CombOptionDto()
         combDto1.content = "option"
-        combDto1.link = 1;
+        combDto1.setLink(new ArrayList<Integer>());
+        combDto1.addToLink(1);
         combDto1.left = true;
         def combOptions = new ArrayList<CombOptionDto>()
         combOptions.add(combDto1)

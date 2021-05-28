@@ -23,7 +23,7 @@
       </div>
     </div>
     <component
-      :is="question.questionDetails.type"
+      :is="questionComponent"
       :questionDetails="question.questionDetails"
       :answerDetails="answer.answerDetails"
       v-on="$listeners"
@@ -38,15 +38,19 @@ import StatementQuestion from '@/models/statement/StatementQuestion';
 import Image from '@/models/management/Image';
 import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import MultipleChoiceAnswer from '@/components/multiple-choice/MultipleChoiceAnswer.vue';
+import CombinationItemAnswer from '@/components/combination-item/CombinationItemAnswer.vue';
+import MultipleChoiceStatementQuestionDetails from '@/models/statement/questions/MultipleChoiceStatementQuestionDetails';
+import MultipleChoiceAnswerOrder from '@/components/multiple-choice/MultipleChoiceAnswerOrder.vue';
 import StatementAnswer from '@/models/statement/StatementAnswer';
 import CodeFillInAnswer from '@/components/code-fill-in/CodeFillInAnswer.vue';
 import CodeOrderAnswer from '@/components/code-order/CodeOrderAnswer.vue';
-
 @Component({
   components: {
+    multiple_choice_order: MultipleChoiceAnswerOrder,
     multiple_choice: MultipleChoiceAnswer,
     code_fill_in: CodeFillInAnswer,
     code_order: CodeOrderAnswer,
+    combination_item : CombinationItemAnswer,
   },
 })
 export default class QuestionComponent extends Vue {
@@ -67,9 +71,18 @@ export default class QuestionComponent extends Vue {
     return 1;
   }
 
+  get questionComponent(){
+    return (this.question && 
+      this.question.questionDetails.type=='multiple_choice' &&
+      (this.question.questionDetails as MultipleChoiceStatementQuestionDetails).ordered)
+      ? 'multiple_choice_order'
+      : this.question?.questionDetails.type
+  }
+
   convertMarkDown(text: string, image: Image | null = null): string {
     return convertMarkDown(text, image);
   }
+
 }
 </script>
 

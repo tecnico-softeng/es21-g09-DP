@@ -41,9 +41,13 @@ export default class MultipleChoiceView extends Vue {
   @Prop() readonly answerDetails?: MultipleChoiceAnswerDetails;
 
   studentAnswered(option: number) {
-    return this.answerDetails && this.answerDetails?.option.id === option
-      ? '**[S]** '
-      : '';
+    let answer = this.answerDetails?.answeredOptions.filter(x=>x.optionId==option)[0]
+    if(this.answerDetails && typeof answer !== 'undefined'){
+      return '**[S'+(answer.order!=null?answer.order:'')+']** ';
+    }
+    else{
+      return '';
+    }
   }
 
   convertMarkDown(text: string, image: Image | null = null): string {

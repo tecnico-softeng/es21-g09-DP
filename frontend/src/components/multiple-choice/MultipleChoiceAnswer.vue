@@ -3,7 +3,6 @@ Used on:
   - QuestionComponent.vue
   - ResultComponent.vue
 -->
-
 <template>
   <ul data-cy="optionList" class="option-list">
     <li
@@ -17,15 +16,14 @@ Used on:
       <span
         v-if="
           isReadonly &&
-          correctAnswerDetails.correctOptionId ===
-            questionDetails.options[index].optionId
+          optionClass(index).includes('correct')
         "
         class="fas fa-check option-letter"
       />
       <span
         v-else-if="
           isReadonly &&
-          answerDetails.optionId === questionDetails.options[index].optionId
+          optionClass(index)=='wrong'
         "
         class="fas fa-times option-letter"
       />
@@ -47,8 +45,14 @@ import { convertMarkDown } from '@/services/ConvertMarkdownService';
 import Image from '@/models/management/Image';
 import MultipleChoiceStatementAnswerDetails from '@/models/statement/questions/MultipleChoiceStatementAnswerDetails';
 import MultipleChoiceStatementCorrectAnswerDetails from '@/models/statement/questions/MultipleChoiceStatementCorrectAnswerDetails';
+import OptionStatementAnswerDetails from '@/models/statement/questions/OptionStatementAnswerDetails';
+import draggable from 'vuedraggable';
 
-@Component
+@Component({
+  components: {
+    draggable,
+  },
+})
 export default class MultipleChoiceAnswer extends Vue {
   @Prop(MultipleChoiceStatementQuestionDetails)
   readonly questionDetails!: MultipleChoiceStatementQuestionDetails;
@@ -65,21 +69,32 @@ export default class MultipleChoiceAnswer extends Vue {
     if (this.isReadonly) {
       if (
         !!this.correctAnswerDetails &&
-        this.correctAnswerDetails.correctOptionId ===
-          this.questionDetails.options[index].optionId
+        this.correctAnswerDetails.correctOptions
+              .filter(x => x.correct)
+              .map(x => x.optionId)
+              .includes(this.questionDetails.options[index].optionId)
       ) {
-        return 'correct';
+        if(this.answerDetails.answeredOptions
+              .map(x => x.optionId)
+              .includes(this.questionDetails.options[index].optionId)){
+                return 'correct-answered';
+              }
+        else{
+          return 'correct'
+        }
       } else if (
-        this.answerDetails.optionId ===
-        this.questionDetails.options[index].optionId
+        this.answerDetails.answeredOptions
+              .map(x => x.optionId)
+              .includes(this.questionDetails.options[index].optionId)
       ) {
         return 'wrong';
       } else {
         return '';
       }
     } else {
-      return this.answerDetails.optionId ===
-        this.questionDetails.options[index].optionId
+      return this.answerDetails.answeredOptions
+            .map(x => x.optionId)
+            .includes(this.questionDetails.options[index].optionId)
         ? 'selected'
         : '';
     }
@@ -87,10 +102,13 @@ export default class MultipleChoiceAnswer extends Vue {
 
   @Emit('question-answer-update')
   selectOption(optionId: number) {
-    if (this.answerDetails.optionId === optionId) {
-      this.answerDetails.optionId = null;
+    if (this.answerDetails.answeredOptions.map(x => x.optionId).includes(optionId)) {
+      this.answerDetails.answeredOptions=this.answerDetails.answeredOptions.filter(x => x.optionId!=optionId);
     } else {
-      this.answerDetails.optionId = optionId;
+      this.answerDetails.answeredOptions.push(new OptionStatementAnswerDetails({
+      optionId: optionId,
+      order: null,
+      }));
     }
   }
 
@@ -115,17 +133,15 @@ export default class MultipleChoiceAnswer extends Vue {
   }
 }
 
-.correct-question {
-  .correct {
-    .option-content {
-      background-color: #299455;
-      color: rgb(255, 255, 255) !important;
-    }
+.correct-answered {
+  .option-content {
+    background-color: #299455;
+    color: rgb(255, 255, 255) !important;
+  }
 
-    .option-letter {
-      background-color: #299455 !important;
-      color: rgb(255, 255, 255) !important;
-    }
+  .option-letter {
+    background-color: #299455 !important;
+    color: rgb(255, 255, 255) !important;
   }
 }
 

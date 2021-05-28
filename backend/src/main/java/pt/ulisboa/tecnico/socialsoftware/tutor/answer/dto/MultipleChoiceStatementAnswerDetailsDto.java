@@ -7,41 +7,56 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQue
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.MultipleChoiceAnswerItem;
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain.QuestionAnswerItem;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.persistence.Transient;
 
 public class MultipleChoiceStatementAnswerDetailsDto extends StatementAnswerDetailsDto {
-    private Integer optionId;
+    private List<OptionStatementAnswerDetailsDto> answeredOptions = new ArrayList<>();
 
     public MultipleChoiceStatementAnswerDetailsDto() {
     }
 
     public MultipleChoiceStatementAnswerDetailsDto(MultipleChoiceAnswer questionAnswer) {
-        if (questionAnswer.getOption() != null) {
-            this.optionId = questionAnswer.getOption().getId();
+        if (questionAnswer.getAnsweredOptions() != null) {
+            this.answeredOptions = questionAnswer.getAnsweredOptions()
+                    .stream()
+                    .<OptionStatementAnswerDetailsDto>map(OptionStatementAnswerDetailsDto::new)
+                    .collect(Collectors.toList());
+            this.answeredOptions.sort(Comparator.comparing(OptionStatementAnswerDetailsDto::getOrder, Comparator.nullsLast(Comparator.naturalOrder()))
+                                                .thenComparing(OptionStatementAnswerDetailsDto::getOptionId));
+            System.out.println("\n\n\n"+answeredOptions);
+            
         }
     }
 
-    public Integer getOptionId() {
-        return optionId;
+    public List<OptionStatementAnswerDetailsDto> getAnsweredOptions() {
+        return answeredOptions;
     }
 
-    public void setOptionId(Integer optionId) {
-        this.optionId = optionId;
+    public void setAnsweredOptions(List<OptionStatementAnswerDetailsDto> answeredOptions) {
+        this.answeredOptions = answeredOptions;
+    }
+    public void addAnsweredOptions(OptionStatementAnswerDetailsDto answeredOption) {
+        this.answeredOptions.add(answeredOption);
     }
 
     @Transient
-    private MultipleChoiceAnswer createdMultipleChoiceAnswer;
+    private MultipleChoiceAnswer multipleChoiceAnswer;
 
     @Override
     public AnswerDetails getAnswerDetails(QuestionAnswer questionAnswer) {
-        createdMultipleChoiceAnswer = new MultipleChoiceAnswer(questionAnswer);
+        multipleChoiceAnswer = new MultipleChoiceAnswer(questionAnswer);
         questionAnswer.getQuestion().getQuestionDetails().update(this);
-        return createdMultipleChoiceAnswer;
+        return multipleChoiceAnswer;
     }
 
     @Override
     public boolean emptyAnswer() {
-        return optionId == null;
+        return answeredOptions == null || answeredOptions.isEmpty();
     }
 
     @Override
@@ -51,13 +66,13 @@ public class MultipleChoiceStatementAnswerDetailsDto extends StatementAnswerDeta
 
     @Override
     public void update(MultipleChoiceQuestion question) {
-        createdMultipleChoiceAnswer.setOption(question, this);
+        multipleChoiceAnswer.setAnwseredOptions(question, this);
     }
 
     @Override
     public String toString() {
         return "MultipleChoiceStatementAnswerDto{" +
-                "optionId=" + optionId +
+                "options=" + answeredOptions +
                 '}';
     }
 }

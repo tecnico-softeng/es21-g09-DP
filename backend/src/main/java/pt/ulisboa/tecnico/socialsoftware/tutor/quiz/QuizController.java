@@ -78,6 +78,8 @@ public class QuizController {
     @PreAuthorize("hasRole('ROLE_TEACHER') and hasPermission(#quizId, 'QUIZ.ACCESS')")
     public QuizAnswersDto getQuizAnswers(@PathVariable Integer quizId) {
         answerService.writeQuizAnswers(quizId);
-        return this.quizService.getQuizAnswers(quizId);
+        QuizAnswersDto result = this.quizService.getQuizAnswers(quizId);
+        System.out.println(result);
+        return result;
     }
 }

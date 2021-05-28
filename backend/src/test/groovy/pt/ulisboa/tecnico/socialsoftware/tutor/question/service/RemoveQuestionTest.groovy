@@ -133,13 +133,13 @@ class RemoveQuestionTest extends SpockTest {
         List<CombOptionDto> combOptions = new ArrayList<>();
         CombOptionDto combDto1 = new CombOptionDto()
         combDto1.content = "option"
-        combDto1.link = 1;
+        combDto1.addToLink(1);
         combDto1.left = true;
         combOptions.add(combDto1)
 
         CombOptionDto combDto2 = new CombOptionDto()
         combDto2.content = "option"
-        combDto2.link = 1;
+        combDto2.addToLink(1);
         combDto2.left = false;
         combOptions.add(combDto2)
 

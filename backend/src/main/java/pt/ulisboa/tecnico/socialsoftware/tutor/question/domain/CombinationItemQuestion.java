@@ -20,7 +20,6 @@ import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.COMBINATION_ITEM_QUESTION)
 public class CombinationItemQuestion extends QuestionDetails{
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "questionDetails", fetch = FetchType.LAZY, orphanRemoval = true)
     private List<CombOption> combOptions = new ArrayList<>();
 
@@ -30,12 +29,7 @@ public class CombinationItemQuestion extends QuestionDetails{
         super(question);
         setOptions(questionDto.getOptions());
     }
-
-    public  CorrectAnswerDetailsDto getCorrectAnswerDetailsDto() {return null;}
-    public  StatementQuestionDetailsDto getStatementQuestionDetailsDto() {return null;}
-    public  StatementAnswerDetailsDto getEmptyStatementAnswerDetailsDto() {return null;}
-    public  AnswerDetailsDto getEmptyAnswerDetailsDto() {return null;}
-
+    
     public List<CombOption> getOptions() { return combOptions; }
 
     public void setOptions(List<CombOptionDto> optionDtos) {
@@ -76,6 +70,36 @@ public class CombinationItemQuestion extends QuestionDetails{
         }
     }
 
+    public CombOption getOptionById(Integer optionId) {
+        return combOptions.stream()
+                .filter(combOption -> combOption.getId().equals(optionId))
+                .findAny()
+                .orElse(null); // FIXME: throw exception
+    }
+
+    /*public List<CombOption> getCorrectAnswer() {
+        return combOptions;
+    }*/
+
+    @Override
+    public  CorrectAnswerDetailsDto getCorrectAnswerDetailsDto() {
+        return new CombinationItemCorrectAnswerDto(this);
+    }
+
+    @Override
+    public  StatementQuestionDetailsDto getStatementQuestionDetailsDto() {
+        return new CombinationItemStatementQuestionDetailsDto(this);
+    }
+
+    @Override
+    public  StatementAnswerDetailsDto getEmptyStatementAnswerDetailsDto() {
+        return new CombinationItemStatementAnswerDetailsDto();
+    }
+
+    @Override
+    public  AnswerDetailsDto getEmptyAnswerDetailsDto() {
+        return new CombinationItemAnswerDto();
+    }
 
     @Override
     public QuestionDetailsDto getQuestionDetailsDto() {

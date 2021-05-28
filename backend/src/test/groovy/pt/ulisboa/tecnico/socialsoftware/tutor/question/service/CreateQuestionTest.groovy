@@ -228,7 +228,6 @@ class CreateQuestionTest extends SpockTest {
         def combQuestionDto = new CombinationItemQuestionDto()
 
         questionDto.setQuestionDetailsDto(combQuestionDto)
-        
 
         when:"both the sets are equal and empty"
         def rawResult = questionService.createQuestion(externalCourse.getId(), questionDto)
@@ -257,23 +256,28 @@ class CreateQuestionTest extends SpockTest {
 
         CombOptionDto combDto1 = new CombOptionDto()
         combDto1.content = "content"
-        combDto1.link = 1;
+        combDto1.link  = new ArrayList<Integer>();
         combDto1.left = true;
 
         CombOptionDto combDto2 = new CombOptionDto()
         combDto2.content = "content1"
-        combDto2.link = 2;
+        combDto2.link  = new ArrayList<Integer>();
         combDto2.left = true;
 
         CombOptionDto combDto3 = new CombOptionDto()
         combDto3.content = "content2"
-        combDto3.link = 1;
+        combDto3.link  = new ArrayList<Integer>();
         combDto3.left = false;
 
         CombOptionDto combDto4 = new CombOptionDto()
+        combDto4.link  = new ArrayList<Integer>();
         combDto4.content = "content3"
-        combDto4.link = 2;
         combDto4.left = false;
+
+        combDto1.addToLink(combDto3.getId());
+        combDto2.addToLink(combDto4.getId());
+        combDto3.addToLink(combDto1.getId());
+        combDto4.addToLink(combDto2.getId());
 
         combQuestionDto.getOptions().add(combDto1)
         combQuestionDto.getOptions().add(combDto2)
@@ -301,8 +305,11 @@ class CreateQuestionTest extends SpockTest {
         def link1 = result.getQuestionDetails().getOptions().get(2)
         def link2 = result.getQuestionDetails().getOptions().get(3)
 
-        opt1.getLink() == link1.getLink()
-        opt2.getLink() == link2.getLink()
+
+        opt1.getLink().get(0) == combDto3.getId()
+        opt2.getLink().get(0) == combDto4.getId()
+        link1.getLink().get(0) == combDto1.getId()
+        link2.getLink().get(0) == combDto2.getId()
         opt1.getContent() == "content"
         link1.getContent() == "content2"
         opt2.getContent() == "content1"
@@ -310,6 +317,7 @@ class CreateQuestionTest extends SpockTest {
         opt1.isLeft() == opt2.isLeft()
         link1.isLeft() == link2.isLeft()
     }
+
 
     def "create a combination question 1-to-1 with 0 connections"(){
         given: "a questionDto"
@@ -323,12 +331,14 @@ class CreateQuestionTest extends SpockTest {
 
         CombOptionDto combDto1 = new CombOptionDto()
         combDto1.content = "option"
-        combDto1.link = -1;
+        combDto1.link  = new ArrayList<Integer>();
+        combDto1.addToLink(-1);
         combDto1.left = true;
 
         CombOptionDto combDto2 = new CombOptionDto()
         combDto2.content = "link"
-        combDto2.link = -1;
+        combDto2.link  = new ArrayList<Integer>();
+        combDto2.addToLink(-1);
         combDto2.left = false;
 
         combQuestionDto.getOptions().add(combDto1)
@@ -354,8 +364,8 @@ class CreateQuestionTest extends SpockTest {
         def opt = result.getQuestionDetails().getOptions().get(0)
         def link = result.getQuestionDetails().getOptions().get(1)
 
-        opt.getLink() == -1
-        link.getLink() == -1
+        opt.getLink().get(0) == -1
+        link.getLink().get(0) == -1
         opt.getContent() == "option"
         link.getContent() == "link"
         opt.isLeft() == true

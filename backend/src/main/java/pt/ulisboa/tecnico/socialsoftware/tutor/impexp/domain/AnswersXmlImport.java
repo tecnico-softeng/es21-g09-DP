@@ -29,6 +29,8 @@ import java.io.*;
 import java.nio.charset.Charset;
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -64,11 +66,15 @@ public class AnswersXmlImport {
     @Autowired
     private QuestionAnswerRepository questionAnswerRepository;
 
-    private Map<Integer, Map<Integer, Integer>> multipleChoiceQuestionMap;
+    private Map<Integer, MultipleChoiceQuestion> multipleChoiceQuestionMap;
+
+    private Map<Integer, CombinationItemQuestion> combinationItemQuestionMap;
 
     private Map<Integer, CodeFillInQuestion> codeFillInQuestionMap;
 
     private Map<Integer, CodeOrderQuestion> codeOrderQuestionMap;
+
+    private Map<Integer, OpenEndedQuestion> openEndedQuestionMap;
 
     public void importAnswers(InputStream inputStream) {
         SAXBuilder builder = new SAXBuilder();
@@ -98,12 +104,17 @@ public class AnswersXmlImport {
     private void loadQuestionMap() {
         multipleChoiceQuestionMap = questionDetailsRepository.findMultipleChoiceQuestionDetails().stream()
                 .collect(Collectors.toMap(questionDetails -> questionDetails.getQuestion().getKey(),
-                        questionDetails -> questionDetails.getOptions().stream()
-                                .collect(Collectors.toMap(Option::getSequence, Option::getId))));
+                        questionDetails -> questionDetails));
+        combinationItemQuestionMap = questionDetailsRepository.findCombinationItemQuestionDetails().stream()
+                .collect(Collectors.toMap(questionDetails -> questionDetails.getQuestion().getKey(),
+                        questionDetails -> questionDetails));
         codeFillInQuestionMap = questionDetailsRepository.findCodeFillInQuestionDetails().stream()
                 .collect(Collectors.toMap(questionDetails -> questionDetails.getQuestion().getKey(),
                         questionDetails -> questionDetails));
         codeOrderQuestionMap = questionDetailsRepository.findCodeOrderQuestionDetails().stream()
+                .collect(Collectors.toMap(questionDetails -> questionDetails.getQuestion().getKey(),
+                        questionDetails -> questionDetails));
+        openEndedQuestionMap = questionDetailsRepository.findOpenEndedQuestionDetails().stream()
                 .collect(Collectors.toMap(questionDetails -> questionDetails.getQuestion().getKey(),
                         questionDetails -> questionDetails));
     }
@@ -192,11 +203,17 @@ public class AnswersXmlImport {
                 case Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION:
                     importMultipleChoiceXmlImport(questionAnswerElement, questionAnswer);
                     break;
+                case Question.QuestionTypes.COMBINATION_ITEM_QUESTION:
+                    importCombinationItemXmlImport(questionAnswerElement, questionAnswer);
+                    break;
                 case Question.QuestionTypes.CODE_FILL_IN_QUESTION:
                     importCodeFillInXmlImport(questionAnswerElement, questionAnswer);
                     break;
                 case Question.QuestionTypes.CODE_ORDER_QUESTION:
                     importCodeOrderXmlImport(questionAnswerElement, questionAnswer);
+                    break;
+                case Question.QuestionTypes.OPEN_ENDED_QUESTION:
+                    importOpenEndedXmlImport(questionAnswerElement, questionAnswer);
                     break;
                 default:
                     throw new TutorException(QUESTION_TYPE_NOT_IMPLEMENTED, questionType);
@@ -271,21 +288,75 @@ public class AnswersXmlImport {
     }
 
     private void importMultipleChoiceXmlImport(Element questionAnswerElement, QuestionAnswer questionAnswer) {
-        Integer optionId = null;
-        if (questionAnswerElement.getChild(OPTION) != null) {
-            Integer questionKey = Integer.valueOf(questionAnswerElement.getChild(OPTION).getAttributeValue(QUESTION_KEY));
-            Integer optionSequence = Integer.valueOf(questionAnswerElement.getChild(OPTION).getAttributeValue(SEQUENCE));
-            optionId = multipleChoiceQuestionMap.get(questionKey).get(optionSequence);
-        }
+        var optionsElement = questionAnswerElement.getChild("options");
+        if (optionsElement != null){
+            Integer questionKey = Integer.valueOf(optionsElement.getAttributeValue(QUESTION_KEY));
+            MultipleChoiceQuestion multipleChoiceQuestion = multipleChoiceQuestionMap.get(questionKey);
 
-        if (optionId == null) {
-            questionAnswer.setAnswerDetails((AnswerDetails) null);
-        } else {
-            MultipleChoiceAnswer answer
-                    = new MultipleChoiceAnswer(questionAnswer, optionRepository.findById(optionId).orElse(null));
+            MultipleChoiceStatementAnswerDetailsDto multipleChoiceStatementAnswerDetailsDto = new MultipleChoiceStatementAnswerDetailsDto();
+            for (var option: optionsElement.getChildren("options")) {
+                var sequence = Integer.valueOf(option.getAttributeValue(SEQUENCE));
+                var order = Integer.valueOf(option.getAttributeValue("order"));
+
+                var optionId = multipleChoiceQuestion.getOptions()
+                        .stream()
+                        .filter(x -> x.getSequence().equals(sequence))
+                        .findAny()
+                        .get().getId();
+                multipleChoiceStatementAnswerDetailsDto.getAnsweredOptions().add(new OptionStatementAnswerDetailsDto(optionId, order));
+            }
+            MultipleChoiceAnswer answer = new MultipleChoiceAnswer(questionAnswer);
+            answer.setAnwseredOptions(multipleChoiceQuestion, multipleChoiceStatementAnswerDetailsDto);
             questionAnswer.setAnswerDetails(answer);
             answerDetailsRepository.save(answer);
         }
+        else{
+            questionAnswer.setAnswerDetails((AnswerDetails) null);
+        }
+    }
 
+    private void importCombinationItemXmlImport(Element questionAnswerElement, QuestionAnswer questionAnswer) {
+        var optionsElement = questionAnswerElement.getChild("options");
+        if (optionsElement != null){
+            Integer questionKey = Integer.valueOf(optionsElement.getAttributeValue(QUESTION_KEY));
+            CombinationItemQuestion combinationItemQuestion = combinationItemQuestionMap.get(questionKey);
+
+            CombinationItemStatementAnswerDetailsDto combinationItemStatementAnswerDetailsDto = new CombinationItemStatementAnswerDetailsDto();
+            for (var option: optionsElement.getChildren("options")) {
+                var sequence = Integer.valueOf(option.getAttributeValue(SEQUENCE));
+                
+                String linkString = option.getAttributeValue("link");
+                String replace = linkString.replace("[", "" );
+                String replace1 = replace.replace("]", "");
+                String[] arrOfStr = replace1.split(",");
+                List<Integer> link = new ArrayList<Integer>();
+                for(String a : arrOfStr){
+                    String b = a.replace(" ", "");
+                    link.add(Integer.parseInt(b));
+                }
+
+                var optionId = combinationItemQuestion.getOptions().stream().filter(x -> x.getSequence().equals(sequence)).findAny().get().getId();
+
+                combinationItemStatementAnswerDetailsDto.getAnsweredLinks().add(new CombOptionStatementAnswerDetailsDto(optionId, link));
+            }
+            CombinationItemAnswer answer = new CombinationItemAnswer(questionAnswer);
+            answer.setAnwseredLinks(combinationItemQuestion, combinationItemStatementAnswerDetailsDto);
+            questionAnswer.setAnswerDetails(answer);
+            answerDetailsRepository.save(answer);
+        }
+        else{
+            questionAnswer.setAnswerDetails((AnswerDetails) null);
+        }
+    }
+
+    private void importOpenEndedXmlImport(Element questionAnswerElement, QuestionAnswer questionAnswer) {
+        String answer = questionAnswerElement.getAttributeValue("answer");
+        if (answer == null) {
+            questionAnswer.setAnswerDetails((AnswerDetails) null);
+        } else {
+            OpenEndedAnswer oeanswer = new OpenEndedAnswer(questionAnswer, answer);
+            questionAnswer.setAnswerDetails(oeanswer);
+            answerDetailsRepository.save(oeanswer);
+        }
     }
 }

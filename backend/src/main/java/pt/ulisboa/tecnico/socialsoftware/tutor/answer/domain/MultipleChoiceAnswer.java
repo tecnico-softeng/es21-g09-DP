@@ -1,25 +1,25 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.answer.domain;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.*;
-import pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.TutorException;
 import pt.ulisboa.tecnico.socialsoftware.tutor.impexp.domain.Visitor;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQuestion;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
-import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.QUESTION_OPTION_MISMATCH;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION)
 public class MultipleChoiceAnswer extends AnswerDetails {
-    @ManyToOne
-    @JoinColumn(name = "option_id")
-    private Option option;
+
+    @OneToMany(mappedBy = "multipleChoiceAnswer", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    private final Set<MultipleChoiceAnswerOption> answeredOptions = new HashSet<>();
 
     public MultipleChoiceAnswer() {
         super();
@@ -29,50 +29,45 @@ public class MultipleChoiceAnswer extends AnswerDetails {
         super(questionAnswer);
     }
 
-    public MultipleChoiceAnswer(QuestionAnswer questionAnswer, Option option){
+    public MultipleChoiceAnswer(QuestionAnswer questionAnswer, Option option, Integer order){
         super(questionAnswer);
-        this.setOption(option);
+        answeredOptions.add(new MultipleChoiceAnswerOption(option,this,order));
     }
 
-    public Option getOption() {
-        return option;
+    public MultipleChoiceAnswer(QuestionAnswer questionAnswer, Collection<MultipleChoiceAnswerOption> options){
+        super(questionAnswer);
+        answeredOptions.addAll(options);
     }
 
-    public void setOption(Option option) {
-        this.option = option;
 
-        if (option != null)
-            option.addQuestionAnswer(this);
+    public Set<MultipleChoiceAnswerOption> getAnsweredOptions() {
+        return answeredOptions;
     }
 
-    public void setOption(MultipleChoiceQuestion question, MultipleChoiceStatementAnswerDetailsDto multipleChoiceStatementAnswerDetailsDto) {
-        if (multipleChoiceStatementAnswerDetailsDto.getOptionId() != null) {
-            Option opt = question.getOptions().stream()
-                    .filter(option1 -> option1.getId().equals(multipleChoiceStatementAnswerDetailsDto.getOptionId()))
-                    .findAny()
-                    .orElseThrow(() -> new TutorException(QUESTION_OPTION_MISMATCH, multipleChoiceStatementAnswerDetailsDto.getOptionId()));
+    public void addAnwseredOptions(Option option, Integer order){
+        answeredOptions.add(new MultipleChoiceAnswerOption(option,this,order));
+    }
 
-            if (this.getOption() != null) {
-                this.getOption().getQuestionAnswers().remove(this);
+    public void setAnwseredOptions(MultipleChoiceQuestion question, 
+                                   MultipleChoiceStatementAnswerDetailsDto multipleChoiceStatementAnswerDetailsDto) {
+        this.answeredOptions.clear();
+        if (!multipleChoiceStatementAnswerDetailsDto.emptyAnswer()) {
+            for(var answeredOption : multipleChoiceStatementAnswerDetailsDto.getAnsweredOptions()){
+                Option option = question.getOptionById(answeredOption.getOptionId());
+                this.answeredOptions.add(new MultipleChoiceAnswerOption(option, this, answeredOption.getOrder()));
             }
-
-            this.setOption(opt);
-        } else {
-            this.setOption(null);
         }
     }
 
     @Override
     public boolean isCorrect() {
-        return getOption() != null && getOption().isCorrect();
+        int correctAmount=((MultipleChoiceQuestion)getQuestionAnswer().getQuestion().getQuestionDetails()).getCorrectAnswer().size();
+        return correctAmount==answeredOptions.size() && answeredOptions.stream().allMatch(MultipleChoiceAnswerOption::isCorrect);
     }
 
 
     public void remove() {
-        if (option != null) {
-            option.getQuestionAnswers().remove(this);
-            option = null;
-        }
+        answeredOptions.forEach(MultipleChoiceAnswerOption::remove);
     }
 
     @Override
@@ -82,12 +77,19 @@ public class MultipleChoiceAnswer extends AnswerDetails {
 
     @Override
     public boolean isAnswered() {
-        return this.getOption() != null;
+        return !answeredOptions.isEmpty();
     }
 
     @Override
     public String getAnswerRepresentation() {
-        return this.getOption() != null ? MultipleChoiceQuestion.convertSequenceToLetter(this.getOption().getSequence()) : "-";
+        if(answeredOptions.isEmpty()){
+            return "-";
+        }else{
+            return answeredOptions.stream()
+            .sorted(Comparator.comparing(MultipleChoiceAnswerOption::getAssignedOrder))
+            .map(x -> MultipleChoiceQuestion.convertSequenceToLetter(x.getOption().getSequence()))
+            .collect(Collectors.joining(" | "));
+        }
     }
 
     @Override

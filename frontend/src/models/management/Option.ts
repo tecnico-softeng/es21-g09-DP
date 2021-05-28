@@ -11,7 +11,7 @@ export default class Option {
       this.id = jsonObj.id;
       this.order = jsonObj.order;
       this.sequence = jsonObj.sequence;
-      this.content = jsonObj.content;
+      this.content = '';
       this.correct = jsonObj.correct;
     }
   }

@@ -33,12 +33,13 @@ class ImportExportCombinationItemQuestionTest extends SpockTest {
 
         CombOptionDto combDto1 = new CombOptionDto()
         combDto1.content = "content"
-        combDto1.link = 1;
+        combDto1.addToLink(1);
+        combDto1.addToLink(2);
         combDto1.left = true;
 
         CombOptionDto combDto2 = new CombOptionDto()
         combDto2.content = "content"
-        combDto2.link = 1;
+        combDto2.addToLink(1);
         combDto2.left = false;
         
         combQuestionDto.getOptions().add(combDto1)
@@ -74,8 +75,9 @@ class ImportExportCombinationItemQuestionTest extends SpockTest {
         def optionTwoResult = questionResult.getQuestionDetailsDto().getOptions().get(1)
         optionOneResult.getContent() == "content"
         optionTwoResult.getContent() == "content"
-        optionOneResult.getLink() == 1
-        optionTwoResult.getLink() == 1
+        optionOneResult.getLink().get(0) == 1
+        optionOneResult.getLink().get(1) == 2
+        optionTwoResult.getLink().get(0) == 1
         optionOneResult.isLeft() == true
         optionTwoResult.isLeft() == false
     }

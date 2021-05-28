@@ -12,8 +12,6 @@ import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import static pt.ulisboa.tecnico.socialsoftware.tutor.exceptions.ErrorMessage.*;
@@ -88,12 +86,11 @@ public class MultipleChoiceQuestion extends QuestionDetails {
         options.add(option);
     }
 
-    public Integer getCorrectOptionId() {
-        return this.getOptions().stream()
-                .filter(Option::isCorrect)
+    public Option getOptionById(Integer optionId) {
+        return options.stream()
+                .filter(option -> option.getId().equals(optionId))
                 .findAny()
-                .map(Option::getId)
-                .orElse(null);
+                .orElseThrow(() -> new TutorException(QUESTION_OPTION_MISMATCH, this.getQuestion().getId(), optionId));
     }
 
     public void update(MultipleChoiceQuestionDto questionDetails) {
@@ -108,11 +105,9 @@ public class MultipleChoiceQuestion extends QuestionDetails {
 
     @Override
     public String getCorrectAnswerRepresentation() {
-        String s = "";
-        for(Integer i : this.getCorrectAnswer()){
-            s = s + convertSequenceToLetter(i) + "  ";
-        }
-        return s;
+        return getCorrectAnswer().stream()
+                .map(sequence -> convertSequenceToLetter(sequence))
+                .collect(Collectors.joining(" | "));
     }
 
     @Override

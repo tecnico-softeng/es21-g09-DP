@@ -115,10 +115,12 @@ public class AnswerService {
                 for (QuestionAnswer questionAnswer : quizAnswer.getQuestionAnswers()) {
                     writeQuestionAnswer(questionAnswer, statementQuizDto.getAnswers());
                 }
-                return quizAnswer.getQuestionAnswers().stream()
+                List<CorrectAnswerDto> results = quizAnswer.getQuestionAnswers().stream()
                         .sorted(Comparator.comparing(QuestionAnswer::getSequence))
                         .map(CorrectAnswerDto::new)
                         .collect(Collectors.toList());
+                System.out.println(results);
+                return results;
             }
         }
         return new ArrayList<>();
@@ -136,7 +138,6 @@ public class AnswerService {
 
         quizAnswerItems.forEach(quizAnswerItem -> {
             QuizAnswer quizAnswer = quizAnswersMap.get(quizAnswerItem.getQuizAnswerId());
-
             if (quizAnswer.getAnswerDate() == null) {
                 quizAnswer.setAnswerDate(quizAnswerItem.getAnswerDate());
 
@@ -146,6 +147,7 @@ public class AnswerService {
             }
             quizAnswerItemRepository.deleteById(quizAnswerItem.getId());
         });
+
     }
 
     private void writeQuestionAnswer(QuestionAnswer questionAnswer, List<StatementAnswerDto> statementAnswerDtoList) {
@@ -343,12 +345,14 @@ public class AnswerService {
     public List<SolvedQuizDto> getSolvedQuizzes(int userId, int executionId) {
         User user = userRepository.findUserWithQuizAnswersAndQuestionAnswersById(userId).orElseThrow(() -> new TutorException(USER_NOT_FOUND, userId));
 
-        return user.getQuizAnswers().stream()
+        List<SolvedQuizDto> results =  user.getQuizAnswers().stream()
                 .filter(quizAnswer -> quizAnswer.canResultsBePublic(executionId))
                 .filter(quizAnswer -> quizAnswer.getAnswerDate() != null)
                 .map(SolvedQuizDto::new)
                 .sorted(Comparator.comparing(SolvedQuizDto::getAnswerDate))
                 .collect(Collectors.toList());
+        System.out.println(results);
+        return results;
     }
 
     @Transactional(isolation = Isolation.READ_COMMITTED)

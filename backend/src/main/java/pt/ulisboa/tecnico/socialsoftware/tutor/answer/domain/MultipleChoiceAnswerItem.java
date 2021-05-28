@@ -6,33 +6,45 @@ import pt.ulisboa.tecnico.socialsoftware.tutor.answer.dto.StatementAnswerDto;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.QuestionDetails;
 
 import javax.persistence.DiscriminatorValue;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
-import java.util.Arrays;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Entity
 @DiscriminatorValue(Question.QuestionTypes.MULTIPLE_CHOICE_QUESTION)
 public class MultipleChoiceAnswerItem extends QuestionAnswerItem {
 
-    private Integer optionId;
+    @ElementCollection
+    private List<OptionAnswerItem> answeredOptions;
 
     public MultipleChoiceAnswerItem() {
     }
 
     public MultipleChoiceAnswerItem(String username, int quizId, StatementAnswerDto answer, MultipleChoiceStatementAnswerDetailsDto detailsDto) {
         super(username, quizId, answer);
-        this.optionId = detailsDto.getOptionId();
+        this.answeredOptions = detailsDto.getAnsweredOptions()
+                    .stream()
+                    .map(OptionAnswerItem::new)
+                    .collect(Collectors.toList());
     }
 
     @Override
     public String getAnswerRepresentation(QuestionDetails questionDetails) {
-        return this.getOptionId() != null ? questionDetails.getAnswerRepresentation(Arrays.asList(optionId)) : "-";
+        return questionDetails.getAnswerRepresentation(
+                        answeredOptions.stream()
+                        .sorted(Comparator.comparing(OptionAnswerItem::getAssignedOrder))
+                        .map(OptionAnswerItem::getOptionId)
+                        .collect(Collectors.toList()));
     }
 
-    public Integer getOptionId() {
-        return optionId;
+    public List<OptionAnswerItem> getAnsweredOptions() {
+        return answeredOptions;
     }
 
-    public void setOptionId(Integer optionId) {
-        this.optionId = optionId;
+    public void setOptionId(List<OptionAnswerItem> options) {
+        this.answeredOptions = options;
     }
 }

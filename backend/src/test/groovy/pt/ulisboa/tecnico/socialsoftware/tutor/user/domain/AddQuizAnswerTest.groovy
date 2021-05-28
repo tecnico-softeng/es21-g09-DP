@@ -66,7 +66,7 @@ class AddQuizAnswerTest extends SpockTest {
         quizAnswer.setCompleted(true)
 
         def questionAnswer = new QuestionAnswer(quizAnswer, quizQuestion, 1, 1)
-        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option))
+        questionAnswer.setAnswerDetails(new MultipleChoiceAnswer(questionAnswer, option, null))
     }
 
     def "addQuizAnswer" (){

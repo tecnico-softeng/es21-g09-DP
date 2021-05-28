@@ -48,6 +48,7 @@
               class="mr-2 action-button"
               v-on="on"
               @click="showQuizAnswers(item)"
+              data-cy="table"
               >mdi-table</v-icon
             >
           </template>

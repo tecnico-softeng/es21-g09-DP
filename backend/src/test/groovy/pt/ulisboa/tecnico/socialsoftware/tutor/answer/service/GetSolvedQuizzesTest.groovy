@@ -82,7 +82,7 @@ class GetSolvedQuizzesTest extends SpockTest {
         questionAnswer.setSequence(0)
         questionAnswer.setQuizAnswer(quizAnswer)
         questionAnswer.setQuizQuestion(quizQuestion)
-        def answerDetails = new MultipleChoiceAnswer(questionAnswer, option);
+        def answerDetails = new MultipleChoiceAnswer(questionAnswer, option, null);
         questionAnswer.setAnswerDetails(answerDetails);
 
         quizRepository.save(quiz)
@@ -101,11 +101,13 @@ class GetSolvedQuizzesTest extends SpockTest {
         solvedQuizDto.statementQuiz.getAnswers().size() == 1
         def answer = solvedQuizDto.statementQuiz.getAnswers().get(0)
         answer.getSequence() == 0
-        answer.getAnswerDetails().getOptionId() == option.getId()
+        answer.getAnswerDetails().getAnsweredOptions().size == 1;
+        answer.getAnswerDetails().getAnsweredOptions().get(0).getOptionId() == option.getId()
         solvedQuizDto.getCorrectAnswers().size() == 1
         def correct = solvedQuizDto.getCorrectAnswers().get(0)
         correct.getSequence() == 0
-        correct.getCorrectAnswerDetails().getCorrectOptionId() == option.getId()
+        correct.getCorrectAnswerDetails().getCorrectOptions().size() == 1;
+        correct.getCorrectAnswerDetails().getCorrectOptions().stream().anyMatch(x->x.getOptionId()==option.getId())
 
         where:
         quizType                 | conclusionDate    | resultsDate
@@ -142,7 +144,7 @@ class GetSolvedQuizzesTest extends SpockTest {
         questionAnswer.setSequence(0)
         questionAnswer.setQuizAnswer(quizAnswer)
         questionAnswer.setQuizQuestion(quizQuestion)
-        def answerDetails = new MultipleChoiceAnswer(questionAnswer, option);
+        def answerDetails = new MultipleChoiceAnswer(questionAnswer, option, null);
         questionAnswer.setAnswerDetails(answerDetails)
 
         quizRepository.save(quiz)

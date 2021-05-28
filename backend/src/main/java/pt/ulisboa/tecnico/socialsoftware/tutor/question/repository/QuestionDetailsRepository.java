@@ -20,4 +20,11 @@ public interface QuestionDetailsRepository extends JpaRepository<QuestionDetails
 
     @Query(value = "SELECT * FROM question_details q WHERE q.question_type = 'code_order'", nativeQuery = true)
     List<CodeOrderQuestion> findCodeOrderQuestionDetails();
+
+    @Query(value = "SELECT * FROM question_details q WHERE q.question_type = 'combination_item'", nativeQuery = true)
+    List<CombinationItemQuestion> findCombinationItemQuestionDetails();
+
+    @Query(value = "SELECT * FROM question_details q WHERE q.question_type = 'open_ended'", nativeQuery = true)
+    List<OpenEndedQuestion> findOpenEndedQuestionDetails();
+
 }

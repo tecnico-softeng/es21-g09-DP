@@ -30,19 +30,14 @@ describe('Manage Combination Item Questions Walk-through', () => {
 
     beforeEach(() => {
         cy.demoTeacherLogin();
-        cy.server();
         cy.route('GET', '/courses/*/questions').as('getQuestions');
         cy.route('GET', '/courses/*/topics').as('getTopics');
         cy.get('[data-cy="managementMenuButton"]').click();
         cy.get('[data-cy="questionsTeacherMenuButton"]').click();
 
-        cy.wait('@getQuestions')
-            .its('status')
-            .should('eq', 200);
+        cy.wait('@getQuestions').its('status').should('eq', 200);
 
-        cy.wait('@getTopics')
-            .its('status')
-            .should('eq', 200);
+        cy.wait('@getTopics').its('status').should('eq', 200);
     });
 
     afterEach(() => {
@@ -75,41 +70,27 @@ describe('Manage Combination Item Questions Walk-through', () => {
         ).type('Cypress Question Example - Content - 01', { force: true });
 
         cy.get(
-            '[data-cy="Option1"]'
+            '[data-cy="Option0"]'
         ).click({force: true}).type('Cypress Option Example - Option - 01', { force: true });
 
         cy.get(
-            '[data-cy="Option2"]'
+            '[data-cy="Option1"]'
         ).click({force: true}).type('Cypress Option Example - Answer - 02', { force: true });
 
         cy.get(
-            '[data-cy="Option3"]'
+            '[data-cy="Option2"]'
         ).click({force: true}).type('Cypress Option Example - Option - 03', { force: true });
 
         cy.get(
-            '[data-cy="Option4"]'
+            '[data-cy="Option3"]'
         ).click({force: true}).type('Cypress Option Example - Answer - 04', { force: true });
 
-        cy.get('[data-cy="CombOptionLeftofOption1"]')
+        cy.get('[data-cy="CombOptionLeftofOption0"]')
             .click({force: true});
-        cy.get('[data-cy="CombOptionLeftofOption3"]')
+        cy.get('[data-cy="CombOptionLeftofOption2"]')
             .click({force: true});
 
-        cy.get(
-            '[data-cy="CombOptionLinkofOption1"]'
-        ).clear({ force: true }).type('1', { force: true });
-
-        cy.get(
-            '[data-cy="CombOptionLinkofOption2"]'
-        ).clear({ force: true }).type('2', { force: true });
-
-        cy.get(
-            '[data-cy="CombOptionLinkofOption3"]'
-        ).clear({ force: true }).type('3', { force: true });
-
-        cy.get(
-            '[data-cy="CombOptionLinkofOption4"]'
-        ).clear({ force: true }).type('4', { force: true });
+        
         
 
         cy.route('POST', '/courses/*/questions/').as('postQuestion');

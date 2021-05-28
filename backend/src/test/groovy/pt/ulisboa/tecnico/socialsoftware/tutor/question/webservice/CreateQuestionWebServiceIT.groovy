@@ -134,13 +134,9 @@ class CreateQuestionWebServiceIT extends QuestionWebServiceIT {
         question.content == questionDto.getContent()
 
         def opt = question.questionDetailsDto.options.get(0)
-        def link = question.questionDetailsDto.options.get(1)
-        opt.link == 1
-        opt.link == link.link
+        opt.link.get(0) == 1
         opt.content == "option"
-        link.content == "link"
         opt.left == true
-        link.left == false
 
         question.status == Question.Status.AVAILABLE.name()
     }

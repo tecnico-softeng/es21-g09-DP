@@ -1,10 +1,12 @@
 package pt.ulisboa.tecnico.socialsoftware.tutor.question.dto;
 
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.MultipleChoiceQuestion;
+import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Option;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.Question;
 import pt.ulisboa.tecnico.socialsoftware.tutor.question.domain.QuestionDetails;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,7 +19,11 @@ public class MultipleChoiceQuestionDto extends QuestionDetailsDto {
 
     public MultipleChoiceQuestionDto(MultipleChoiceQuestion question) {
         this.ordered = question.isOrdered();
-        this.options = question.getOptions().stream().map(OptionDto::new).collect(Collectors.toList());
+        this.options = question.getOptions().stream()
+                    .map(OptionDto::new)
+                    .collect(Collectors.toList());
+        
+        this.options.sort(Comparator.comparing(OptionDto::getId, Comparator.nullsLast(Comparator.naturalOrder())));
     }
 
     public boolean isOrdered(){

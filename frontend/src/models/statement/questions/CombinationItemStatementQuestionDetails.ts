@@ -1,10 +1,10 @@
 import StatementQuestionDetails from '@/models/statement/questions/StatementQuestionDetails';
 import { QuestionTypes } from '@/services/QuestionHelpers';
-import StatementOption from '@/models/statement/StatementOption';
+import StatementCombOption from '@/models/statement/StatementCombOption';
 import { _ } from 'vue-underscore';
 
 export default class CombinationItemStatementQuestionDetails extends StatementQuestionDetails {
-  options: StatementOption[] = [];
+  options: StatementCombOption[] = [];
 
   constructor(jsonObj?: CombinationItemStatementQuestionDetails) {
     super(QuestionTypes.CombinationItem);
@@ -12,7 +12,7 @@ export default class CombinationItemStatementQuestionDetails extends StatementQu
       if (jsonObj.options) {
         this.options = _.shuffle(
           jsonObj.options.map(
-            (option: StatementOption) => new StatementOption(option)
+            (option: StatementCombOption) => new StatementCombOption(option)
           )
         );
       }

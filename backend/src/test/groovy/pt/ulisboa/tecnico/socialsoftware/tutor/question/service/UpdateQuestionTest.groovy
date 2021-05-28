@@ -99,7 +99,7 @@ class UpdateQuestionTest extends SpockTest {
         combOptionOK = new CombOption()
         combOptionOK.setContent(OPTION_1_CONTENT)
         combOptionOK.setLeft(true)
-        combOptionOK.setLink(1)
+        combOptionOK.addToLink(1)
         combOptionOK.setSequence(0)
         combOptionOK.setQuestionDetails(combQuestionDetails)
         optionRepository.save(combOptionOK)
@@ -107,7 +107,7 @@ class UpdateQuestionTest extends SpockTest {
         combOptionKO = new CombOption()
         combOptionKO.setContent(OPTION_2_CONTENT)
         combOptionKO.setLeft(false)
-        combOptionKO.setLink(1)
+        combOptionKO.addToLink(1)
         combOptionKO.setSequence(1)
         combOptionKO.setQuestionDetails(combQuestionDetails)
         optionRepository.save(combOptionKO)
@@ -122,10 +122,12 @@ class UpdateQuestionTest extends SpockTest {
         and: '2 changed combOptions'
         def combOptions = new ArrayList<CombOptionDto>()
         def combOptionDto = new CombOptionDto(combOptionOK)
-        combOptionDto.setLink(2)
+        combOptionDto.removeFromLink(1)
+        combOptionDto.addToLink(2)
         combOptions.add(combOptionDto)
         combOptionDto = new CombOptionDto(combOptionKO)
-        combOptionDto.setLink(2)
+        combOptionDto.removeFromLink(1)
+        combOptionDto.addToLink(2)
         combOptions.add(combOptionDto)
 
         questionDto.getQuestionDetailsDto().setOptions(combOptions)
@@ -147,10 +149,10 @@ class UpdateQuestionTest extends SpockTest {
 
         and: 'both Sets are changed'
         def opt1 = result.getQuestionDetails().getOptions().get(0)
-        opt1.getLink() == 2
+        opt1.isInLink(2) == true
         opt1.isLeft() == true
         def opt2 = result.getQuestionDetails().getOptions().get(1)
-        opt2.getLink() == 2
+        opt2.isInLink(2) == true
         opt2.isLeft() == false
 
     }
@@ -300,7 +302,7 @@ class UpdateQuestionTest extends SpockTest {
         quizAnswerRepository.save(quizAnswer)
 
         def questionAnswer = new QuestionAnswer()
-        def answerDetails = new MultipleChoiceAnswer(questionAnswer, optionOK)
+        def answerDetails = new MultipleChoiceAnswer(questionAnswer, optionOK,null)
         questionAnswer.setAnswerDetails(answerDetails)
         questionAnswer.setQuizQuestion(quizQuestion)
         questionAnswer.setQuizAnswer(quizAnswer)
@@ -308,7 +310,7 @@ class UpdateQuestionTest extends SpockTest {
         answerDetailsRepository.save(answerDetails)
 
         questionAnswer = new QuestionAnswer()
-        answerDetails = new MultipleChoiceAnswer(questionAnswer, optionKO)
+        answerDetails = new MultipleChoiceAnswer(questionAnswer, optionKO,null)
         questionAnswer.setAnswerDetails(answerDetails)
         questionAnswer.setQuizQuestion(quizQuestion)
         questionAnswer.setQuizAnswer(quizAnswer)
